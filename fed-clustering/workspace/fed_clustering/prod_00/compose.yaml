@@ -1,0 +1,90 @@
+services:
+  overseer:
+    build: nvflare_compose
+    command:
+      - ${WORKSPACE}/startup/start.sh
+    container_name: overseer
+    image: ${IMAGE_NAME}
+    ports:
+      - 8443:8443
+    volumes:
+      - ./overseer:${WORKSPACE}
+  server1:
+    build: nvflare_compose
+    command:
+      - ${PYTHON_EXECUTABLE}
+      - -u
+      - -m
+      - nvflare.private.fed.app.server.server_train
+      - -m
+      - ${WORKSPACE}
+      - -s
+      - fed_server.json
+      - --set
+      - secure_train=true
+      - config_folder=config
+      - org=nvidia
+    container_name: server1
+    image: ${IMAGE_NAME}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - DFA_URL=http://host.docker.internal:22000
+    ports:
+      - 8002:8002
+      - 8003:8003
+    volumes:
+      - ./server1:${WORKSPACE}
+      - nvflare_svc_persist:/tmp/nvflare/
+  site-1:
+    build: nvflare_compose
+    command:
+      - ${PYTHON_EXECUTABLE}
+      - -u
+      - -m
+      - nvflare.private.fed.app.client.client_train
+      - -m
+      - ${WORKSPACE}
+      - -s
+      - fed_client.json
+      - --set
+      - secure_train=true
+      - uid=site-1
+      - org=nvidia
+      - config_folder=config
+    container_name: site-1
+    image: ${IMAGE_NAME}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - DFA_URL=http://host.docker.internal:22000
+    volumes:
+      - /tmp/nvflare/dataset:/tmp/nvflare/dataset
+      - ./site-1:${WORKSPACE}
+  site-2:
+    build: nvflare_compose
+    command:
+      - ${PYTHON_EXECUTABLE}
+      - -u
+      - -m
+      - nvflare.private.fed.app.client.client_train
+      - -m
+      - ${WORKSPACE}
+      - -s
+      - fed_client.json
+      - --set
+      - secure_train=true
+      - uid=site-2
+      - org=nvidia
+      - config_folder=config
+    container_name: site-2
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - DFA_URL=http://host.docker.internal:22000
+    image: ${IMAGE_NAME}
+    volumes:
+      - /tmp/nvflare/dataset:/tmp/nvflare/dataset
+      - ./site-2:${WORKSPACE}
+volumes:
+  nvflare_svc_persist: null
