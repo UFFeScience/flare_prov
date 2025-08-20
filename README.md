@@ -14,22 +14,6 @@ Each FL round consists of:
 
 ---
 
-## Running Federated Learning with Proper Data Splitting
-
-### Data Partitioning
-For an trial with `K` clients, the dataset is split into `K+1` non-overlapping parts:
-- `K` parts for client training.
-- `1` common validation dataset.
-
-### Simulating Data Imbalance
-Clients' data sizes can be distributed using different strategies:
-- **Uniform**: Equal data for all clients.
-- **Linear**: Data size grows linearly with client ID.
-- **Square**: Data size increases quadratically.
-- **Exponential**: Best suited for small `K` (e.g., `K=5`) to simulate extreme imbalance.
-
----
-
 ## Capturing Provenance with DfAnalyzer
 
 DfAnalyzer is a library designed to capture provenance data, which includes:
@@ -197,4 +181,8 @@ This creates a folder `results` inside the `dfanalyzer` directory with .csv file
 
 ## Conclusion
 This project demonstrates federated k-Means clustering using NVFlare, Scikit-learn, and DfAnalyzer. Provenance data is captured throughout, ensuring transparency and reproducibility of FL trials.
+
+## Credits
+
+This project builds upon [NVidia Flare](https://github.com/NVIDIA/NVFlare).
 
